@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador de Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+            color: #3643BA;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        h2, h3 {
+            color: #3643BA;
+            font-weight: 600;
+        }
+        #fileInput {
+            border-color: #3643BA;
+        }
+        #differencesOutput {
+            margin-top: 20px;
+            color: #3643BA;
+        }
+        .table thead th {
+            background-color: #3643BA;
+            color: white;
+        }
+        .table-danger {
+            background-color: #f8d7da !important;
+        }
+    </style>
+</head>
+<body>
+    
+<div class="container">
+    <a href="index.html" class="btn btn-primary btn-lg btn-block mt-3">Volver al Inicio</a>
+    <h2 class="text-center mb-5">Comparar Items</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="input-group mb-3">
+                <input type="file" class="form-control" id="fileInput">
+                <label class="input-group-text" for="fileInput">Seleccionar archivo para comparar</label>
+            </div>
+            <button class="btn btn-primary" id="compareBtn">Comparar y Mostrar</button>
+        </div>
+    </div>
+    <div id="differencesOutput"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script>
+    document.getElementById('compareBtn').addEventListener('click', function () {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const tableData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            const newData = [];
+
+            let katoenIndex = 1;
+            let sucursalIndex = 1;
+
+            while (katoenIndex < tableData.length && sucursalIndex < tableData.length) {
+                const katoenRow = tableData[katoenIndex];
+                const sucursalRow = tableData[sucursalIndex];
+
+                const katoenItemCode = katoenRow[0];
+                const katoenQuantity = katoenRow[1];
+                const sucursalItemCode = sucursalRow[2];
+                const sucursalQuantity = sucursalRow[3];
+
+                if (katoenItemCode === sucursalItemCode) {
+                    const difference = katoenQuantity - sucursalQuantity;
+                    newData.push([katoenItemCode, katoenQuantity, sucursalItemCode, sucursalQuantity, difference]);
+                    katoenIndex++;
+                    sucursalIndex++;
+                } else if (katoenItemCode < sucursalItemCode) {
+                    newData.push([katoenItemCode, katoenQuantity, null, null, katoenQuantity]);
+                    katoenIndex++;
+                } else {
+                    newData.push([null, null, sucursalItemCode, sucursalQuantity, sucursalQuantity * -1]);
+                    sucursalIndex++;
+                }
+            }
+
+            while (katoenIndex < tableData.length) {
+                const katoenRow = tableData[katoenIndex];
+                const katoenItemCode = katoenRow[0];
+                const katoenQuantity = katoenRow[1];
+                newData.push([katoenItemCode, katoenQuantity, null, null, katoenQuantity]);
+                katoenIndex++;
+            }
+
+            while (sucursalIndex < tableData.length) {
+                const sucursalRow = tableData[sucursalIndex];
+                const sucursalItemCode = sucursalRow[2];
+                const sucursalQuantity = sucursalRow[3];
+                newData.push([null, null, sucursalItemCode, sucursalQuantity, sucursalQuantity * -1]);
+                sucursalIndex++;
+            }
+
+            const newWorkbook = XLSX.utils.book_new();
+            const newSheet = XLSX.utils.aoa_to_sheet([['ITEM CODE Katoen', 'QUANTITY Katoen', 'ITEM CODE Sucursal', 'QUANTITY Sucursal', 'Diferencia'], ...newData]);
+            XLSX.utils.book_append_sheet(newWorkbook, newSheet, 'Comparacion');
+            const excelBuffer = XLSX.write(newWorkbook, { type: 'array', bookType: 'xlsx' });
+
+            saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'comparacion.xlsx');
+
+            const differencesOutput = document.getElementById('differencesOutput');
+            differencesOutput.innerHTML = '';
+            const table = document.createElement('table');
+            table.classList.add('table');
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `<th>ITEM CODE Katoen</th><th>QUANTITY Katoen</th><th>ITEM CODE Sucursal</th><th>QUANTITY Sucursal</th><th>Diferencia</th>`;
+            table.appendChild(headerRow);
+            newData.forEach(rowData => {
+                const row = document.createElement('tr');
+                rowData.forEach(cellData => {
+                    const cell = document.createElement('td');
+                    cell.textContent = cellData !== null ? cellData : 'null';
+                    row.appendChild(cell);
+                });
+                table.appendChild(row);
+            });
+            differencesOutput.appendChild(table);
+        };
+
+        reader.readAsArrayBuffer(file);
+    });
+</script>
+</body>
+</html>
+
