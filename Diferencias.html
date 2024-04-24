@@ -21,7 +21,7 @@
             color: #3643BA;
             font-weight: 600;
         }
-        #fileInput {
+        #fileInputKatoen, #fileInputSucursal {
             border-color: #3643BA;
         }
         #differencesOutput {
@@ -45,8 +45,12 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="input-group mb-3">
-                <input type="file" class="form-control" id="fileInput">
-                <label class="input-group-text" for="fileInput">Seleccionar archivo para comparar</label>
+                <input type="file" class="form-control" id="fileInputKatoen">
+                <label class="input-group-text" for="fileInputKatoen">Seleccionar archivo de Katoen</label>
+            </div>
+            <div class="input-group mb-3">
+                <input type="file" class="form-control" id="fileInputSucursal">
+                <label class="input-group-text" for="fileInputSucursal">Seleccionar archivo de Sucursal</label>
             </div>
             <button class="btn btn-primary" id="compareBtn">Comparar y Mostrar</button>
         </div>
@@ -58,90 +62,87 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
     document.getElementById('compareBtn').addEventListener('click', function () {
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-        const reader = new FileReader();
+        const fileInputKatoen = document.getElementById('fileInputKatoen');
+        const fileInputSucursal = document.getElementById('fileInputSucursal');
+        const fileKatoen = fileInputKatoen.files[0];
+        const fileSucursal = fileInputSucursal.files[0];
 
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
-            const tableData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        const readerKatoen = new FileReader();
+        const readerSucursal = new FileReader();
 
-            const newData = [];
+        readerKatoen.onload = function(eKatoen) {
+            readerSucursal.onload = function(eSucursal) {
+                const dataKatoen = new Uint8Array(eKatoen.target.result);
+                const dataSucursal = new Uint8Array(eSucursal.target.result);
+                const workbookKatoen = XLSX.read(dataKatoen, { type: 'array' });
+                const workbookSucursal = XLSX.read(dataSucursal, { type: 'array' });
+                const sheetNameKatoen = workbookKatoen.SheetNames[0];
+                const sheetNameSucursal = workbookSucursal.SheetNames[0];
+                const sheetKatoen = workbookKatoen.Sheets[sheetNameKatoen];
+                const sheetSucursal = workbookSucursal.Sheets[sheetNameSucursal];
+                const tableDataKatoen = XLSX.utils.sheet_to_json(sheetKatoen, { header: 1 });
+                const tableDataSucursal = XLSX.utils.sheet_to_json(sheetSucursal, { header: 1 });
 
-            let katoenIndex = 1;
-            let sucursalIndex = 1;
+                const katoenMap = new Map();
+                const sucursalMap = new Map();
 
-            while (katoenIndex < tableData.length && sucursalIndex < tableData.length) {
-                const katoenRow = tableData[katoenIndex];
-                const sucursalRow = tableData[sucursalIndex];
-
-                const katoenItemCode = katoenRow[0];
-                const katoenQuantity = katoenRow[1];
-                const sucursalItemCode = sucursalRow[2];
-                const sucursalQuantity = sucursalRow[3];
-
-                if (katoenItemCode === sucursalItemCode) {
-                    const difference = katoenQuantity - sucursalQuantity;
-                    newData.push([katoenItemCode, katoenQuantity, sucursalItemCode, sucursalQuantity, difference]);
-                    katoenIndex++;
-                    sucursalIndex++;
-                } else if (katoenItemCode < sucursalItemCode) {
-                    newData.push([katoenItemCode, katoenQuantity, null, null, katoenQuantity]);
-                    katoenIndex++;
-                } else {
-                    newData.push([null, null, sucursalItemCode, sucursalQuantity, sucursalQuantity * -1]);
-                    sucursalIndex++;
+                // Procesar datos de Katoen
+                for (let i = 1; i < tableDataKatoen.length; i++) {
+                    const row = tableDataKatoen[i];
+                    const itemCode = row[0];
+                    const quantity = row[1];
+                    katoenMap.set(itemCode, quantity);
                 }
-            }
 
-            while (katoenIndex < tableData.length) {
-                const katoenRow = tableData[katoenIndex];
-                const katoenItemCode = katoenRow[0];
-                const katoenQuantity = katoenRow[1];
-                newData.push([katoenItemCode, katoenQuantity, null, null, katoenQuantity]);
-                katoenIndex++;
-            }
+                // Procesar datos de Sucursal
+                for (let i = 1; i < tableDataSucursal.length; i++) {
+                    const row = tableDataSucursal[i];
+                    const itemCode = row[0];
+                    const quantity = row[1];
+                    sucursalMap.set(itemCode, quantity);
+                }
 
-            while (sucursalIndex < tableData.length) {
-                const sucursalRow = tableData[sucursalIndex];
-                const sucursalItemCode = sucursalRow[2];
-                const sucursalQuantity = sucursalRow[3];
-                newData.push([null, null, sucursalItemCode, sucursalQuantity, sucursalQuantity * -1]);
-                sucursalIndex++;
-            }
+                // Comparar y generar el informe de diferencias
+                const newData = [];
+                const allItemCodes = new Set([...katoenMap.keys(), ...sucursalMap.keys()]);
 
-            const newWorkbook = XLSX.utils.book_new();
-            const newSheet = XLSX.utils.aoa_to_sheet([['ITEM CODE Katoen', 'QUANTITY Katoen', 'ITEM CODE Sucursal', 'QUANTITY Sucursal', 'Diferencia'], ...newData]);
-            XLSX.utils.book_append_sheet(newWorkbook, newSheet, 'Comparacion');
-            const excelBuffer = XLSX.write(newWorkbook, { type: 'array', bookType: 'xlsx' });
-
-            saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'comparacion.xlsx');
-
-            const differencesOutput = document.getElementById('differencesOutput');
-            differencesOutput.innerHTML = '';
-            const table = document.createElement('table');
-            table.classList.add('table');
-            const headerRow = document.createElement('tr');
-            headerRow.innerHTML = `<th>ITEM CODE Katoen</th><th>QUANTITY Katoen</th><th>ITEM CODE Sucursal</th><th>QUANTITY Sucursal</th><th>Diferencia</th>`;
-            table.appendChild(headerRow);
-            newData.forEach(rowData => {
-                const row = document.createElement('tr');
-                rowData.forEach(cellData => {
-                    const cell = document.createElement('td');
-                    cell.textContent = cellData !== null ? cellData : 'null';
-                    row.appendChild(cell);
+                allItemCodes.forEach(itemCode => {
+                    const katoenQuantity = katoenMap.get(itemCode) || 0;
+                    const sucursalQuantity = sucursalMap.get(itemCode) || 0;
+                    const difference = katoenQuantity - sucursalQuantity;
+                    newData.push([itemCode, katoenQuantity, itemCode, sucursalQuantity, difference]);
                 });
-                table.appendChild(row);
-            });
-            differencesOutput.appendChild(table);
+
+                // Generar el archivo Excel y mostrar el resultado en la página
+                const newWorkbook = XLSX.utils.book_new();
+                const newSheet = XLSX.utils.aoa_to_sheet([['ITEM CODE Katoen', 'QUANTITY Katoen', 'ITEM CODE Sucursal', 'QUANTITY Sucursal', 'Diferencia'], ...newData]);
+                XLSX.utils.book_append_sheet(newWorkbook, newSheet, 'Comparacion');
+                const excelBuffer = XLSX.write(newWorkbook, { type: 'array', bookType: 'xlsx' });
+                saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'comparacion.xlsx');
+
+                const differencesOutput = document.getElementById('differencesOutput');
+                differencesOutput.innerHTML = '';
+                const table = document.createElement('table');
+                table.classList.add('table');
+                const headerRow = document.createElement('tr');
+                headerRow.innerHTML = `<th>ITEM CODE Katoen</th><th>QUANTITY Katoen</th><th>ITEM CODE Sucursal</th><th>QUANTITY Sucursal</th><th>Diferencia</th>`;
+                table.appendChild(headerRow);
+                newData.forEach(rowData => {
+                    const row = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const cell = document.createElement('td');
+                        cell.textContent = cellData !== null ? cellData : 'null';
+                        row.appendChild(cell);
+                    });
+                    table.appendChild(row);
+                });
+                differencesOutput.appendChild(table);
+            };
         };
 
-        reader.readAsArrayBuffer(file);
+        readerKatoen.readAsArrayBuffer(fileKatoen);
+        readerSucursal.readAsArrayBuffer(fileSucursal);
     });
 </script>
 </body>
 </html>
-
