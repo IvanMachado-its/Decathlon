@@ -86,21 +86,21 @@
                 const katoenMap = new Map();
                 const sucursalMap = new Map();
 
-                // Procesar datos de Katoen
-                for (let i = 1; i < tableDataKatoen.length; i++) {
-                    const row = tableDataKatoen[i];
-                    const itemCode = row[0];
-                    const quantity = row[1];
-                    katoenMap.set(itemCode, quantity);
-                }
+   // Procesar datos de Katoen
+for (let i = 1; i < tableDataKatoen.length; i++) {
+    const row = tableDataKatoen[i];
+    const itemCode = (row[0] || '').toString().trim(); // Limpiar el código de item
+    const quantity = row[1];
+    katoenMap.set(itemCode, quantity);
+}
 
-                // Procesar datos de Sucursal
-                for (let i = 1; i < tableDataSucursal.length; i++) {
-                    const row = tableDataSucursal[i];
-                    const itemCode = row[0];
-                    const quantity = row[1];
-                    sucursalMap.set(itemCode, quantity);
-                }
+// Procesar datos de Sucursal
+for (let i = 1; i < tableDataSucursal.length; i++) {
+    const row = tableDataSucursal[i];
+    const itemCode = (row[0] || '').toString().trim(); // Limpiar el código de item
+    const quantity = row[1];
+    sucursalMap.set(itemCode, quantity);
+}
 
                 // Comparar y generar el informe de diferencias
                 const newData = [];
