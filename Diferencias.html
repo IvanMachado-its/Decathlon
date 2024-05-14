@@ -109,7 +109,7 @@ for (let i = 1; i < tableDataSucursal.length; i++) {
                 allItemCodes.forEach(itemCode => {
                     const katoenQuantity = katoenMap.get(itemCode) || 0;
                     const sucursalQuantity = sucursalMap.get(itemCode) || 0;
-                    const difference = katoenQuantity - sucursalQuantity;
+                    const difference = sucursalQuantity - katoenQuantity;
                     newData.push([itemCode, katoenQuantity, itemCode, sucursalQuantity, difference]);
                 });
 
