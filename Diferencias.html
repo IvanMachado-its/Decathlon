@@ -16,6 +16,7 @@
             background-color: white;
             border-radius: 10px;
             padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h2, h3 {
             color: #3643BA;
@@ -35,13 +36,30 @@
         .table-danger {
             background-color: #f8d7da !important;
         }
+        .explanation {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #495057;
+        }
+        .btn-primary {
+            background-color: #3643BA;
+            border-color: #3643BA;
+        }
+        .btn-primary:hover {
+            background-color: #2d3a9e;
+            border-color: #2d3a9e;
+        }
     </style>
 </head>
 <body>
     
 <div class="container">
     <a href="index.html" class="btn btn-primary btn-lg btn-block mt-3">Volver al Inicio</a>
-    <h2 class="text-center mb-5">Comparar Items</h2>
+    <h2 class="text-center mb-4">Comparar Items</h2>
+    <div class="explanation">
+        Esta herramienta permite comparar los inventarios de dos archivos Excel: uno de Katoen y otro de una sucursal. 
+        Puedes cargar los archivos y la herramienta generará un informe que muestra las diferencias en las cantidades de cada ítem.
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="input-group mb-3">
@@ -52,7 +70,7 @@
                 <input type="file" class="form-control" id="fileInputSucursal">
                 <label class="input-group-text" for="fileInputSucursal">Seleccionar archivo de Sucursal</label>
             </div>
-            <button class="btn btn-primary" id="compareBtn">Comparar y Mostrar</button>
+            <button class="btn btn-primary btn-lg btn-block" id="compareBtn">Comparar y Mostrar</button>
         </div>
     </div>
     <div id="differencesOutput"></div>
@@ -86,21 +104,21 @@
                 const katoenMap = new Map();
                 const sucursalMap = new Map();
 
-   // Procesar datos de Katoen
-for (let i = 1; i < tableDataKatoen.length; i++) {
-    const row = tableDataKatoen[i];
-    const itemCode = (row[0] || '').toString().trim(); // Limpiar el código de item
-    const quantity = row[1];
-    katoenMap.set(itemCode, quantity);
-}
+                // Procesar datos de Katoen
+                for (let i = 1; i < tableDataKatoen.length; i++) {
+                    const row = tableDataKatoen[i];
+                    const itemCode = (row[0] || '').toString().trim(); // Limpiar el código de item
+                    const quantity = row[1];
+                    katoenMap.set(itemCode, quantity);
+                }
 
-// Procesar datos de Sucursal
-for (let i = 1; i < tableDataSucursal.length; i++) {
-    const row = tableDataSucursal[i];
-    const itemCode = (row[0] || '').toString().trim(); // Limpiar el código de item
-    const quantity = row[1];
-    sucursalMap.set(itemCode, quantity);
-}
+                // Procesar datos de Sucursal
+                for (let i = 1; i < tableDataSucursal.length; i++) {
+                    const row = tableDataSucursal[i];
+                    const itemCode = (row[0] || '').toString().trim(); // Limpiar el código de item
+                    const quantity = row[1];
+                    sucursalMap.set(itemCode, quantity);
+                }
 
                 // Comparar y generar el informe de diferencias
                 const newData = [];
@@ -146,3 +164,4 @@ for (let i = 1; i < tableDataSucursal.length; i++) {
 </script>
 </body>
 </html>
+
