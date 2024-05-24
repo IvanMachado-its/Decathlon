@@ -11,59 +11,66 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             background-color: #f8f9fa;
-            color: #333;
+            color: #3643BA;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
         }
         .navbar {
-            background-color: #0071c2;
+            background-color: #3643BA;
+            width: 100%;
             padding: 1rem;
+            text-align: center;
         }
-        .navbar-brand {
-            color: #fff;
-            font-weight: 600;
-            font-size: 1.5rem;
+        .navbar img {
+            max-height: 50px;
         }
         .container {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 2rem auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
             text-align: center;
+            margin-top: 20px;
         }
         h1 {
-            color: #0071c2;
+            color: #3643BA;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
-        .btn-primary {
-            background-color: #0071c2;
-            border-color: #0071c2;
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .btn {
+            background-color: #3643BA;
+            color: #fff;
+            border: none;
             font-weight: 600;
+            transition: all 0.3s ease-in-out;
             margin-top: 10px;
             padding: 15px 20px;
             font-size: 1.1rem;
-            border-radius: 8px;
+            border-radius: 10px;
         }
-        .btn-primary:hover {
-            background-color: #005b9a;
-            border-color: #005b9a;
+        .btn:hover {
+            background-color: #2a327d;
         }
         .btn-secondary {
             background-color: #6c757d;
-            border-color: #6c757d;
         }
         .btn-description {
             font-size: 0.9rem;
             color: #6c757d;
             margin-top: 10px;
-            margin-bottom: 20px;
-        }
-        .logo {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 20px;
         }
         @media (min-width: 768px) {
             .logo {
@@ -78,22 +85,31 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="#">Logística</a>
+    <nav class="navbar">
+        <img src="decathlon-logo.png" alt="Decathlon Logo">
     </nav>
     <div class="container">
-        <img src="decathlon-logo.png" alt="Decathlon Logo" class="logo">
         <h1>Bienvenido a Logística</h1>
-        <div>
-            <a href="FiltrarEPC.html" class="btn btn-primary">Filtrar EPC</a>
-            <p class="btn-description">Utilice esta opción para depurar los códigos EPC después de un proceso de conteo.</p>
-            
-            <a href="Diferencias.html" class="btn btn-secondary">Diferencias Sucursal</a>
-            <p class="btn-description">Esta herramienta permite comparar las diferencias entre el inventario de la sucursal y los datos enviados por Katoen.</p>
-            
-            <a href="DiffLogistica.html" class="btn btn-secondary">Comparador de Logística</a>
-            <p class="btn-description">Emplee esta opción para comparar el stock entre los sistemas Cube y Bit.</p>
+        <div class="card">
+            <div class="card-body">
+                <a href="FiltrarEPC.html" class="btn btn-primary">Filtrar EPC</a>
+                <p class="btn-description">Utilice esta opción para depurar los códigos EPC después de un proceso de conteo.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="Diferencias.html" class="btn btn-secondary">Diferencias Sucursal</a>
+                <p class="btn-description">Esta herramienta permite comparar las diferencias entre el inventario de la sucursal y los datos enviados por Katoen.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <a href="DiffLogistica.html" class="btn btn-secondary">Comparador de Logística</a>
+                <p class="btn-description">Emplee esta opción para comparar el stock entre los sistemas Cube y Bit.</p>
+            </div>
         </div>
     </div>
 </body>
 </html>
+
+
