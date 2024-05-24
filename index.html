@@ -45,14 +45,39 @@
             font-weight: 600;
             margin-bottom: 30px;
         }
+        .card-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px; /* Espacio entre las tarjetas */
+        }
         .card {
             border: none;
             border-radius: 0;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+            width: calc(33.33% - 20px);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease-in-out; /* Animación */
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Ajuste de altura para mantener el mismo tamaño */
+        }
+        .card:hover {
+            transform: translateY(-10px); /* Efecto de levantamiento al pasar el cursor */
         }
         .card-body {
             padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-body h2 {
+            margin-bottom: 10px;
+            font-size: 1.5rem; /* Tamaño del título */
+            line-height: 1.2; /* Altura de línea */
+            text-align: center; /* Centrar texto */
+            height: 70px; /* Altura fija para el título */
         }
         .btn {
             background-color: #3643BA;
@@ -60,21 +85,34 @@
             border: none;
             font-weight: 600;
             transition: all 0.3s ease-in-out;
-            margin-top: 10px;
-            padding: 15px 20px;
-            font-size: 1.1rem;
+            padding: 10px 15px; /* Ajuste del padding */
+            font-size: 1rem; /* Tamaño del texto */
             border-radius: 10px;
+            width: 100%; /* Botones con ancho completo */
+            overflow: hidden; /* Ocultar texto que exceda la altura */
+            text-overflow: ellipsis; /* Mostrar puntos suspensivos para texto excedente */
+            height: 50px; /* Altura fija para el botón */
+            margin-top: 10px; /* Ajuste del margen superior */
         }
         .btn:hover {
             background-color: #2a327d;
         }
         .btn-secondary {
-            background-color: #6c757d;
+            background-color: #ccc; /* Mismo color que los botones primarios */
         }
         .btn-description {
             font-size: 0.9rem;
             color: #6c757d;
-            margin-top: 10px;
+            margin-top: 15px; /* Ajuste del margen superior */
+            height: 100px; /* Altura fija para la descripción */
+        }
+        @media screen and (max-width: 768px) {
+            .card-container {
+                flex-direction: column; /* Cambiar a dirección de columna en dispositivos móviles */
+            }
+            .card {
+                width: 100%; /* Tarjetas ocupan todo el ancho en dispositivos móviles */
+            }
         }
     </style>
 </head>
@@ -84,25 +122,31 @@
     </nav>
     <div class="container">
         <h1>Herramientas de Logística</h1>
-        <div class="card">
-            <div class="card-body">
-                <a href="FiltrarEPC.html" class="btn btn-primary">Filtrar EPC</a>
-                <p class="btn-description">Utilice esta opción para depurar los códigos EPC después de un proceso de conteo.</p>
+        <div class="card-container">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Filtrar EPC</h2>
+                    <p class="btn-description">Utilice esta opción para depurar los códigos EPC después de un proceso de conteo.</p>
+                    <a href="FiltrarEPC.html" class="btn btn-primary">Ingresar</a>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="Diferencias.html" class="btn btn-secondary">Diferencias Sucursal</a>
-                <p class="btn-description">Esta herramienta permite comparar las diferencias entre el inventario de la sucursal y los datos enviados por Katoen.</p>
+            <div class="card">
+                <div class="card-body">
+                    <h2>Diferencias Sucursal</h2>
+                    <p class="btn-description">Esta herramienta permite comparar las diferencias entre el inventario de la sucursal y los datos enviados por Katoen.</p>
+                    <a href="Diferencias.html" class="btn btn-primary">Ingresar</a>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <a href="DiffLogistica.html" class="btn btn-secondary">Comparador de Logística</a>
-                <p class="btn-description">Emplee esta opción para comparar el stock entre los sistemas Cube y Bit.</p>
+            <div class="card">
+                <div class="card-body">
+                    <h2>Comparador de Logística</h2>
+                    <p class="btn-description">Emplee esta opción para comparar el stock entre los sistemas Cube y Bit.</p>
+                    <a href="DiffLogistica.html" class="btn btn-primary">Ingresar</a>
+                </div>
             </div>
         </div>
     </div>
 </body>
 </html>
+
 
