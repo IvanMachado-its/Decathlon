@@ -5,29 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparador de Items</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            margin: 20px;
+            margin: 0;
             background-color: #f8f9fa;
             color: #3643BA;
         }
         .container {
             background-color: white;
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
         }
         h2, h3 {
             color: #3643BA;
             font-weight: 600;
         }
-        #fileInputKatoen, #fileInputSucursal {
+        .btn-primary {
+            background-color: #3643BA;
             border-color: #3643BA;
         }
+        .btn-primary:hover {
+            background-color: #2d3b8b;
+            border-color: #2d3b8b;
+        }
+        .form-control:focus {
+            border-color: #3643BA;
+            box-shadow: 0 0 0 0.25rem rgba(54, 67, 186, 0.25);
+        }
+        .input-group-text {
+            background-color: #3643BA;
+            color: white;
+        }
         #differencesOutput {
-            margin-top: 20px;
-            color: #3643BA;
+            margin-top: 30px;
         }
         .table thead th {
             background-color: #3643BA;
@@ -36,54 +50,70 @@
         .table-danger {
             background-color: #f8d7da !important;
         }
-        .explanation {
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            color: #495057;
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #6c757d;
         }
-        .btn-primary {
-            background-color: #3643BA;
-            border-color: #3643BA;
+        #loadingSpinner {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
         }
-        .btn-primary:hover {
-            background-color: #2d3a9e;
-            border-color: #2d3a9e;
+        #loadingSpinner .spinner-border {
+            width: 3rem;
+            height: 3rem;
         }
     </style>
 </head>
 <body>
     
 <div class="container">
-    <a href="index.html" class="btn btn-primary btn-lg btn-block mt-3">Volver al Inicio</a>
-    <h2 class="text-center mb-4">Comparar Items</h2>
-    <div class="explanation">
-        Esta herramienta permite comparar los inventarios de dos archivos Excel: uno de Katoen y otro de una sucursal. 
-        Puedes cargar los archivos y la herramienta generará un informe que muestra las diferencias en las cantidades de cada ítem.
-    </div>
+    <a href="index.html" class="btn btn-primary btn-lg btn-block mt-3 mb-5">Volver al Inicio</a>
+    <h2 class="text-center mb-5">Comparar Items</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="input-group mb-3">
-                <input type="file" class="form-control" id="fileInputKatoen">
+            <p class="mb-4">Por favor, selecciona los archivos de Katoen y Sucursal que deseas comparar utilizando el botón "Seleccionar archivo". Una vez seleccionados ambos archivos, haz clic en el botón "Comparar y Mostrar" para ver las diferencias entre los dos conjuntos de datos.</p>
+            <div class="input-group mb-4">
+                <input type="file" class="form-control" id="fileInputKatoen" accept=".xlsx, .xls">
                 <label class="input-group-text" for="fileInputKatoen">Seleccionar archivo de Katoen</label>
             </div>
-            <div class="input-group mb-3">
-                <input type="file" class="form-control" id="fileInputSucursal">
+            <div class="input-group mb-4">
+                <input type="file" class="form-control" id="fileInputSucursal" accept=".xlsx, .xls">
                 <label class="input-group-text" for="fileInputSucursal">Seleccionar archivo de Sucursal</label>
             </div>
-            <button class="btn btn-primary btn-lg btn-block" id="compareBtn">Comparar y Mostrar</button>
+            <button class="btn btn-primary btn-lg w-100" id="compareBtn">Comparar y Mostrar</button>
         </div>
     </div>
-    <div id="differencesOutput"></div>
+    <div id="loadingSpinner">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p>Procesando los archivos, por favor espera...</p>
+    </div>
+    <div id="differencesOutput" class="mt-5"></div>
 </div>
+
+<footer>
+    <p>&copy; 2024 Comparador de Items. Todos los derechos reservados.</p>
+</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 <script>
     document.getElementById('compareBtn').addEventListener('click', function () {
         const fileInputKatoen = document.getElementById('fileInputKatoen');
         const fileInputSucursal = document.getElementById('fileInputSucursal');
         const fileKatoen = fileInputKatoen.files[0];
         const fileSucursal = fileInputSucursal.files[0];
+
+        if (!fileKatoen || !fileSucursal) {
+            alert("Por favor, selecciona ambos archivos para comparar.");
+            return;
+        }
+
+        document.getElementById('loadingSpinner').style.display = 'block';
 
         const readerKatoen = new FileReader();
         const readerSucursal = new FileReader();
@@ -155,13 +185,14 @@
                     table.appendChild(row);
                 });
                 differencesOutput.appendChild(table);
-            };
-        };
 
+                document.getElementById('loadingSpinner').style.display = 'none';
+            };
+            readerSucursal.readAsArrayBuffer(fileSucursal);
+        };
         readerKatoen.readAsArrayBuffer(fileKatoen);
-        readerSucursal.readAsArrayBuffer(fileSucursal);
     });
 </script>
+
 </body>
 </html>
-
