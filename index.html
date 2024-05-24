@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
+    <title>Inicio | Decathlon Logística</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -21,7 +22,7 @@
             border-radius: 15px;
             padding: 40px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
         }
         h1 {
@@ -50,12 +51,30 @@
             font-size: 0.9rem;
             color: #6c757d;
             margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 30px;
+        }
+        @media (min-width: 768px) {
+            .logo {
+                max-width: 400px;
+            }
+        }
+        @media (min-width: 992px) {
+            .logo {
+                max-width: 500px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Bienvenido</h1>
+    <img src="decathlon-logo.png" alt="Decathlon Logo" class="logo">
+    <h1>Bienvenido a Decathlon Logística</h1>
     <div>
         <a href="FiltrarEPC.html" class="btn btn-primary">Filtrar EPC</a>
         <p class="btn-description">Utilice esta opción para depurar los códigos EPC después de un proceso de conteo.</p>
@@ -69,3 +88,4 @@
 </div>
 </body>
 </html>
+
